@@ -106,8 +106,17 @@ async function run() {
         })
 
 
+        //----------------------------------------//
+        //--------This is Review section----------//
+        //----------------------------------------//
 
+        //Its for review showing on ui.
+        app.get('/review', async (req, res) => {
+            const query = {};
+            const reviews = (await reviewCollection.find(query).toArray()).reverse();
 
+            res.send(reviews);
+        })
 
         //Its for review add from ui
         app.post('/review', async (req, res) => {
