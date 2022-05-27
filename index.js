@@ -1,5 +1,5 @@
 const express = require('express')
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express()
@@ -23,26 +23,26 @@ async function run() {
         const productsCollection = client.db('manufacturer-website').collection('products');
         const reviewCollection = client.db('manufacturer-website').collection('review');
 
-        // const userCollection = client.db('doctors-portal').collection('users');
+        const userCollection = client.db('manufacturer-website').collection('users');
 
 
-        function verifyJWT(req, res, next) {
-            const authHeader = req.headers.authorization;
+        // function verifyJWT(req, res, next) {
+        //     const authHeader = req.headers.authorization;
 
-            if (!authHeader) {
-                return res.status(401).send({ message: 'unAuthorized access' });
-            }
-            const token = authHeader.split(' ')[1];
-            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-                if (err) {
-                    return res.status(403).send({ message: 'Forbidden access' })
+        //     if (!authHeader) {
+        //         return res.status(401).send({ message: 'unAuthorized access' });
+        //     }
+        //     const token = authHeader.split(' ')[1];
+        //     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        //         if (err) {
+        //             return res.status(403).send({ message: 'Forbidden access' })
 
-                }
+        //         }
 
-                req.decoded = decoded;
-                next();
-            });
-        }
+        //         req.decoded = decoded;
+        //         next();
+        //     });
+        // }
 
 
         // app.get('/user', verifyJWT, async (req, res) => {
@@ -77,20 +77,24 @@ async function run() {
         //     res.send({ admin: isAdmin })
         // })
 
+        //----------------------------------------//
+        //--------This is Review section----------//
+        //----------------------------------------//
 
-        // app.put('/user/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const user = req.body;
-        //     const filter = { email: email };
-        //     const options = { upsert: true };
-        //     const updateDoc = {
-        //         $set: user,
-        //     };
-        //     const result = await userCollection.updateOne(filter, updateDoc, options);
-        //     const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-        //     res.send({ result, token });
 
-        // })
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            res.send({ result, token });
+
+        })
 
         app.get('/tool', async (req, res) => {
             const query = {};
