@@ -21,27 +21,28 @@ async function run() {
         await client.connect();
 
         const productsCollection = client.db('manufacturer-website').collection('products');
-        // const bookingCollection = client.db('doctors-portal').collection('booking');
+        const reviewCollection = client.db('manufacturer-website').collection('review');
 
         // const userCollection = client.db('doctors-portal').collection('users');
 
 
-        // function verifyJWT(req, res, next) {
-        //     const authHeader = req.headers.authorization;
-        //     if (!authHeader) {
-        //         return res.status(401).send({ message: 'unAuthorized access' });
-        //     }
-        //     const token = authHeader.split(' ')[1];
-        //     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-        //         if (err) {
-        //             return res.status(403).send({ message: 'Forbidden access' })
+        function verifyJWT(req, res, next) {
+            const authHeader = req.headers.authorization;
 
-        //         }
+            if (!authHeader) {
+                return res.status(401).send({ message: 'unAuthorized access' });
+            }
+            const token = authHeader.split(' ')[1];
+            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+                if (err) {
+                    return res.status(403).send({ message: 'Forbidden access' })
 
-        //         req.decoded = decoded;
-        //         next();
-        //     });
-        // }
+                }
+
+                req.decoded = decoded;
+                next();
+            });
+        }
 
 
         // app.get('/user', verifyJWT, async (req, res) => {
@@ -97,6 +98,24 @@ async function run() {
             const tools = await cursor.toArray();
             res.send(tools)
         })
+        app.get('/allTool', async (req, res) => {
+            const query = {};
+            const cursor = productsCollection.find(query);
+            const tools = await cursor.toArray();
+            res.send(tools)
+        })
+
+
+
+
+
+        //Its for review add from ui
+        app.post('/review', async (req, res) => {
+            const newReview = req.body;
+            const result = await reviewCollection.insertOne(newReview)
+            res.send(result)
+        })
+
 
 
 
